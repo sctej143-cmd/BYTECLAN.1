@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE MUTINY: Cursed Arena Survival</title>
+    <!-- Google Fonts for premium retro-pirate and modern UI aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- The combat arena -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Main Menu Overlay -->
+        <div id="start-screen" class="menu-overlay active">
+            <div class="menu-content">
+                <h1 class="game-title">THE MUTINY</h1>
+                <p class="subtitle">Survive your cursed crew as the fearless Duck Captain.</p>
+                <p class="subtitle-duck">QUACK TO ATTACK: YOU ARE A DUCK!</p>
+                
+                <div class="instructions-panel">
+                    <h3>CAPTAIN'S ORDERS:</h3>
+                    <ul>
+                        <li><span class="key">WASD</span> or <span class="key">Arrow Keys</span> to Move</li>
+                        <li><span class="key">Aim with Mouse</span> &amp; <span class="key">Left Click</span> to Fire/Slash</li>
+                        <li><span class="highlight">Cursed Weapons</span> spawn in crates. You can only carry <span class="highlight">ONE</span>. Picking up a new one drops the old.</li>
+                        <li>Every weapon carries a <span class="warning">HEAVY CURSE</span>. Abuse them, but beware the drawback!</li>
+                    </ul>
+                </div>
+
+                <div class="weapons-preview">
+                    <div class="weapon-card">
+                        <div class="weapon-name">Boom-erang Blunderbuss</div>
+                        <div class="weapon-curse">Recoil flings you backward violently!</div>
+                    </div>
+                    <div class="weapon-card">
+                        <div class="weapon-name">Double-Edge Cutlass</div>
+                        <div class="weapon-curse">Striking drains 1 HP, but kills heal.</div>
+                    </div>
+                    <div class="weapon-card">
+                        <div class="weapon-name">Heavy Anchor</div>
+                        <div class="weapon-curse">Reduces speed by 45% and roots you when thrown.</div>
+                    </div>
+                    <div class="weapon-card">
+                        <div class="weapon-name">Drunken Rum Flask</div>
+                        <div class="weapon-curse">Fumes make your controls drift and wobble.</div>
+                    </div>
+                    <div class="weapon-card">
+                        <div class="weapon-name">Static Harpoon</div>
+                        <div class="weapon-curse">Lightning shock freezes you for 0.15s per hit.</div>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="btn primary-btn">START SURVIVAL</button>
+            </div>
+        </div>
+
+        <!-- HUD: Captain's Log -->
+        <div id="hud" class="hud-layer hidden">
+            <!-- Left Side: Health and Stats -->
+            <div class="hud-left">
+                <div class="log-header">CAPTAIN'S LOG</div>
+                <div class="stat-group">
+                    <div class="stat-label">VITALITY</div>
+                    <div class="bar-container health-bar-container">
+                        <div id="health-fill" class="bar-fill health-fill" style="width: 100%;"></div>
+                        <div id="health-text" class="bar-text">100 / 100</div>
+                    </div>
+                </div>
+                <div class="stat-row">
+                    <div class="mini-stat">
+                        <span class="label">SURVIVED:</span>
+                        <span id="time-val" class="value">00:00</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="label">MUTINEERS SLAIN:</span>
+                        <span id="kills-val" class="value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Wave Details -->
+            <div class="hud-center">
+                <div id="wave-title" class="wave-title">WAVE 1</div>
+                <div id="wave-sub" class="wave-sub">CREW MUTINY IMMINENT</div>
+                <div class="bar-container wave-bar-container">
+                    <div id="wave-progress-fill" class="bar-fill wave-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Right Side: Cursed Inventory -->
+            <div class="hud-right">
+                <div class="log-header">CURSED ARSENAL</div>
+                <div id="active-weapon-container" class="active-weapon-box">
+                    <div id="weapon-display-name" class="weapon-name">RUSTY FLINTLOCK</div>
+                    <div class="weapon-label">CURSE DRAWBACK:</div>
+                    <div id="weapon-curse-desc" class="weapon-curse">Absolutely none, standard issue. Pathetic damage.</div>
+                </div>
+                <button id="mute-btn" class="hud-btn" aria-label="Toggle Sound">🔊 SOUND: ON</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen: Captain's Last Log -->
+        <div id="game-over-screen" class="menu-overlay hidden">
+            <div class="menu-content game-over-box">
+                <h1 class="game-over-title">THE CAPTAIN HAS FALLEN</h1>
+                <div class="scroll-decoration"></div>
+                
+                <div class="final-stats">
+                    <div class="final-stat-row">
+                        <span>Survival Time:</span>
+                        <span id="final-time" class="highlight">0m 0s</span>
+                    </div>
+                    <div class="final-stat-row">
+                        <span>Mutineers Cleared:</span>
+                        <span id="final-kills" class="highlight">0</span>
+                    </div>
+                    <div class="final-stat-row">
+                        <span>Highest Wave:</span>
+                        <span id="final-wave" class="highlight">1</span>
+                    </div>
+                    <div class="final-stat-row">
+                        <span>Favorite Curse:</span>
+                        <span id="final-weapon" class="highlight">Rusty Flintlock</span>
+                    </div>
+                    <div class="final-stat-row">
+                        <span>High Score Time:</span>
+                        <span id="high-score-time" class="highlight-gold">0m 0s</span>
+                    </div>
+                </div>
+
+                <div class="epitaph-box">
+                    <h3>LAST WORDS:</h3>
+                    <p id="epitaph-text">"They got me... but I took a few dozen down with me."</p>
+                </div>
+
+                <button id="restart-btn" class="btn primary-btn pulse">MUTINY AGAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Game Scripts -->
+    <script src="game.js"></script>
+</body>
+</html>
